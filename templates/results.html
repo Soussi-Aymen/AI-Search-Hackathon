@@ -56,6 +56,29 @@
       border-radius: 10px;
       overflow-x: auto;
       font-size: 0.9rem;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .highlight {
+      background-color: #e0f0ff;
+      color: #003366;
+      font-weight: bold;
+      padding: 0 4px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+
+    pre a {
+      color: #007BFF;
+      text-decoration: underline;
+    }
+
+    pre code {
+      background: #ddd;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-family: monospace;
     }
 
     .back-link {
@@ -79,7 +102,7 @@
     <div class="timestamp">Generated on: {{ timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</div>
 
     <h2>📌 Recommendations</h2>
-    <ul>
+    <ul class="highlightable">
       {% for item in seo.recommendations %}
         <li>{{ item }}</li>
       {% else %}
@@ -124,9 +147,39 @@
     </ul>
 
     <h2>📄 Full AI Report</h2>
-    <pre>{{ report }}</pre>
+    <pre id="report-block">{{ report }}</pre>
 
     <a class="back-link" href="/">← Run another analysis</a>
   </div>
+
+  <script>
+    // Highlight **code** in the report
+    const pre = document.getElementById('report-block');
+    const raw = pre.textContent;
+    const highlighted = raw.replace(/\*\*(.+?)\*\*/g, '<span class="highlight">$1</span>');
+    pre.innerHTML = highlighted;
+  </script>
 </body>
 </html>
+
+<script>
+  function parseMarkdown(text) {
+    // Highlight **text**
+    let parsed = text.replace(/\*\*(.+?)\*\*/g, '<span class="highlight">$1</span>');
+
+    // Convert [text](url) into anchor tags
+    parsed = parsed.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+
+    return parsed;
+  }
+
+  // Apply to <pre> report
+  const pre = document.getElementById('report-block');
+  pre.innerHTML = parseMarkdown(pre.textContent);
+
+  // Apply to Recommendations (or any other .highlightable list)
+  document.querySelectorAll('.highlightable li').forEach(li => {
+    li.innerHTML = parseMarkdown(li.textContent);
+  });
+</script>
+

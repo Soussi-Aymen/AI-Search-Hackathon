@@ -2,7 +2,8 @@ from flask import Flask, render_template, request
 import openai
 from datetime import datetime
 
-openai.api_key = ""
+openai.api_key = ""  # Replace with your API key
+MODEL_NAME = "gpt-4o-search-preview"
 
 app = Flask(__name__)
 
